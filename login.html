@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login — Varsha Pawar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#fdf8f8;--white:#ffffff;--pink:#e8a0b4;--pink-deep:#c96b8a;--pink-pale:#fce8ef;--pink-mid:#f2c4d0;--text:#1a0d12;--muted:#8a6070;--border:#f0d0da;--accent:#d4547a;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);cursor:none;min-height:100vh;display:flex;flex-direction:column;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--pink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s;}
+.cursor-ring.expand{width:48px;height:48px;opacity:.5;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:24px 60px;background:rgba(253,248,248,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;letter-spacing:3px;text-transform:uppercase;}
+.logo span{color:var(--accent);font-style:italic;}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px;}
+.card{background:var(--white);border:1px solid var(--border);padding:56px 48px;width:100%;max-width:440px;}
+.section-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--pink-deep);margin-bottom:12px;display:block;}
+.card h2{font-family:'Playfair Display',serif;font-size:36px;font-weight:300;margin-bottom:8px;}
+.card h2 em{font-style:italic;color:var(--accent);}
+.card p{font-size:13px;color:var(--muted);font-weight:300;margin-bottom:28px;}
+.role-tabs{display:flex;gap:0;margin-bottom:28px;}
+.rtab{flex:1;padding:11px;text-align:center;border:1px solid var(--border);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:none;transition:.2s;margin-right:-1px;}
+.rtab.active{background:var(--accent);color:#fff;border-color:var(--accent);z-index:1;}
+.fg{margin-bottom:20px;}
+.fg label{display:block;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.fg input{width:100%;padding:13px 16px;border:1px solid var(--border);background:var(--bg);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;color:var(--text);outline:none;transition:border-color .2s;}
+.fg input:focus{border-color:var(--pink-deep);}
+.btn{width:100%;padding:15px;background:var(--accent);color:#fff;border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:none;transition:.2s;margin-top:8px;}
+.btn:hover{background:var(--pink-deep);}
+.links{display:flex;justify-content:space-between;margin-top:20px;}
+.links a{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;transition:color .2s;}
+.links a:hover{color:var(--accent);}
+.error-msg{display:none;background:#fce8ef;border:1px solid var(--border);padding:12px 16px;font-size:12px;color:var(--pink-deep);margin-bottom:20px;text-align:center;}
+footer{background:var(--text);color:rgba(255,255,255,.5);padding:32px 60px;display:flex;justify-content:space-between;align-items:center;}
+footer .logo{color:rgba(255,255,255,.8);}
+footer p{font-size:12px;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+<nav><div class="logo">Varsha <span>Pawar</span></div></nav>
+<div class="wrap">
+  <div class="card">
+    <span class="section-label">Welcome Back</span>
+    <h2>Sign <em>In</em></h2>
+    <p>Choose your role and enter your credentials.</p>
+    <div class="role-tabs">
+      <div class="rtab active" id="tab-user" onclick="setRole('user')">User</div>
+      <div class="rtab" id="tab-admin" onclick="setRole('admin')">Admin</div>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="you@email.com"/></div>
+    <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"/></div>
+    <button class="btn" onclick="doLogin()">Sign In</button>
+    <div class="links">
+      <a href="register.html">New user? Register</a>
+      <a href="index.html">← Back to site</a>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="logo">Varsha <span>Pawar</span></div>
+  <p>© 2026 Varsha Pawar. All rights reserved.</p>
+</footer>
+<script>
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px';
+});
+document.querySelectorAll('button,a,input,.rtab').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+});
+
+let role = 'user';
+function setRole(r) {
+  role = r;
+  document.getElementById('tab-user').classList.toggle('active', r === 'user');
+  document.getElementById('tab-admin').classList.toggle('active', r === 'admin');
+}
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass = document.getElementById('l-pass').value.trim();
+  const err = document.getElementById('error-msg');
+  if (!email || !pass) { err.style.display='block'; err.textContent='Please fill all fields.'; return; }
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass, role })
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userName', data.name || email);
+      window.location.href = data.role === 'admin' ? 'admin.html' : 'dashboard.html';
+    } else {
+      err.style.display='block'; err.textContent='Invalid email or password.';
+    }
+  } catch(e) {
+    err.style.display='block'; err.textContent='Could not connect to server.';
+  }
+}
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

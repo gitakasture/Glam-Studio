@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Varsha Pawar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#fdf8f8;--white:#ffffff;--pink:#e8a0b4;--pink-deep:#c96b8a;--pink-pale:#fce8ef;--text:#1a0d12;--muted:#8a6070;--border:#f0d0da;--accent:#d4547a;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);cursor:none;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--pink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .15s,width .2s,height .2s,opacity .2s;}
+.cursor-ring.expand{width:48px;height:48px;opacity:.5;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:24px 60px;background:rgba(253,248,248,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;letter-spacing:3px;text-transform:uppercase;}
+.logo span{color:var(--accent);font-style:italic;}
+.nav-right{display:flex;gap:16px;align-items:center;}
+.nav-right a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;transition:color .2s;}
+.nav-right a:hover{color:var(--accent);}
+.admin-wrap{padding:60px;}
+.section-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--pink-deep);margin-bottom:12px;display:block;}
+h2{font-family:'Playfair Display',serif;font-size:40px;font-weight:300;margin-bottom:40px;}
+h2 em{font-style:italic;color:var(--accent);}
+.tabs{display:flex;gap:0;margin-bottom:32px;}
+.tab{padding:11px 28px;border:1px solid var(--border);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:none;transition:.2s;margin-right:-1px;background:transparent;}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);z-index:1;}
+table{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--border);}
+th{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg);}
+td{font-size:13px;padding:14px 16px;border-bottom:1px solid var(--border);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--pink-pale);}
+.badge{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:var(--pink-pale);color:var(--pink-deep);border:1px solid var(--border);}
+.sch-day{margin-bottom:28px;}
+.sch-day-header{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;color:var(--text);padding:10px 16px;background:var(--pink-pale);border:1px solid var(--border);border-bottom:none;display:flex;align-items:center;gap:12px;}
+.sch-day-header .day-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pink-deep);}
+.sch-slot{display:flex;align-items:stretch;border:1px solid var(--border);border-top:none;background:var(--white);}
+.sch-slot:hover{background:var(--pink-pale);}
+.sch-time{min-width:120px;padding:14px 16px;font-size:11px;letter-spacing:1px;color:var(--muted);border-right:1px solid var(--border);display:flex;align-items:center;text-transform:uppercase;}
+.sch-info{padding:14px 16px;flex:1;}
+.sch-name{font-size:14px;color:var(--text);margin-bottom:4px;}
+.sch-meta{font-size:11px;color:var(--muted);letter-spacing:.5px;}
+.sch-empty{padding:14px 16px;font-size:12px;color:var(--muted);font-style:italic;border:1px solid var(--border);border-top:none;background:var(--white);}
+input[type="date"]:focus{border-color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+<nav>
+  <div class="logo">Varsha <span>Pawar</span></div>
+  <div class="nav-right">
+    <a href="index.html">View Site</a>
+    <a href="login.html">Logout</a>
+  </div>
+</nav>
+<div class="admin-wrap">
+  <span class="section-label">Admin Panel</span>
+  <h2>Dashboard <em>Overview</em></h2>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('bookings',this)">Bookings</button>
+    <button class="tab" onclick="showTab('messages',this)">Messages</button>
+    <button class="tab" onclick="showTab('users',this)">Users</button>
+    <button class="tab" onclick="showTab('reviews',this)">Reviews</button>
+    <button class="tab" onclick="showTab('schedule',this)">Schedule</button>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div id="tab-bookings">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Service</th><th>Date</th><th>Slot</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="bookings-body"><tr><td colspan="9" style="text-align:center;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- MESSAGES -->
+  <div id="tab-messages" style="display:none;">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Email</th><th>Subject</th><th>Message</th></tr></thead>
+      <tbody id="messages-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- REVIEWS -->
+  <div id="tab-reviews" style="display:none;">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Service</th><th>Rating</th><th>Review</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="reviews-body"><tr><td colspan="7" style="text-align:center;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- USERS -->
+  <div id="tab-users" style="display:none;">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th></tr></thead>
+      <tbody id="users-body"><tr><td colspan="6" style="text-align:center;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div id="tab-schedule" style="display:none;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">From</label>
+        <input type="date" id="sch-from" style="padding:8px 12px;border:1px solid var(--border);background:var(--white);font-family:'Jost',sans-serif;font-size:12px;color:var(--text);outline:none;"/>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">To</label>
+        <input type="date" id="sch-to" style="padding:8px 12px;border:1px solid var(--border);background:var(--white);font-family:'Jost',sans-serif;font-size:12px;color:var(--text);outline:none;"/>
+      </div>
+      <button onclick="loadSchedule()" style="padding:9px 24px;background:var(--accent);color:#fff;border:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">Filter</button>
+      <button onclick="clearScheduleFilter()" style="padding:9px 24px;background:transparent;color:var(--muted);border:1px solid var(--border);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">Clear</button>
+    </div>
+    <div id="schedule-grid"></div>
+  </div>
+</div>
+
+<script>
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+  ring.style.left = e.clientX + 'px';
+  ring.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('button,a,th,td').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+});
+
+async function loadBookings() {
+  const res = await fetch('/bookings');
+  const data = await res.json();
+  const tbody = document.getElementById('bookings-body');
+  if (!data.data.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);">No bookings yet.</td></tr>'; return; }
+  tbody.innerHTML = data.data.map((b,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${b.fname} ${b.lname||''}</td>
+      <td>${b.phone}</td>
+      <td>${b.email||'-'}</td>
+      <td><span class="badge">${b.service}</span></td>
+      <td>${b.date}</td>
+      <td>${b.slot}</td>
+      <td><span class="badge" style="${b.status==='confirmed'?'background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9':''}">${b.status||'pending'}</span></td>
+      <td>${b.status==='confirmed' ? '✓ Sent' : `<button onclick="confirmBooking(${b.id},'${b.email}','${b.fname}','${b.service}','${b.date}','${b.slot}')" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Confirm</button>`}</td>
+    </tr>`).join('');
+}
+
+async function loadMessages() {
+  const res = await fetch('/messages');
+  const data = await res.json();
+  const tbody = document.getElementById('messages-body');
+  if (!data.data.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);">No messages yet.</td></tr>'; return; }
+  tbody.innerHTML = data.data.map((m,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${m.name}</td>
+      <td>${m.phone||'-'}</td>
+      <td>${m.email||'-'}</td>
+      <td>${m.subject||'-'}</td>
+      <td>${m.message}</td>
+    </tr>`).join('');
+}
+
+async function loadUsers() {
+  const res = await fetch('/users');
+  const data = await res.json();
+  const tbody = document.getElementById('users-body');
+  if (!data.data.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);">No users yet.</td></tr>'; return; }
+  tbody.innerHTML = data.data.map((u,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${u.name||'-'}</td>
+      <td>${u.email}</td>
+      <td>${u.phone||'-'}</td>
+      <td><span class="badge">${u.role}</span></td>
+      <td>${new Date(u.created_at).toLocaleDateString()}</td>
+    </tr>`).join('');
+}
+
+async function confirmBooking(id, email, fname, service, date, slot) {
+  if (!email || email === '-') { alert('No email for this booking.'); return; }
+  const res = await fetch('/confirm-booking', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ id, email, fname, service, date, slot })
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert('Confirmation email sent to ' + email);
+    loadBookings();
+  } else {
+    alert('Failed: ' + data.error);
+  }
+}
+
+async function loadReviews() {
+  const res = await fetch('/reviews/all');
+  const data = await res.json();
+  const tbody = document.getElementById('reviews-body');
+  if (!data.data.length) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);">No reviews yet.</td></tr>'; return; }
+  const stars = n => '★'.repeat(n);
+  tbody.innerHTML = data.data.map((r,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.service||'-'}</td>
+      <td style="color:var(--accent);">${stars(r.rating)}</td>
+      <td>${r.review}</td>
+      <td><span class="badge" style="${r.approved?'background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9':''}">${r.approved?'Approved':'Pending'}</span></td>
+      <td style="display:flex;gap:8px;">
+        ${!r.approved ? `<button onclick="approveReview(${r.id})" style="padding:6px 12px;background:var(--accent);color:#fff;border:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Approve</button>` : ''}
+        <button onclick="deleteReview(${r.id})" style="padding:6px 12px;background:#1a0d12;color:#fff;border:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+// update showTab to include schedule
+function showTab(name, btn) {
+  ['bookings','messages','users','reviews','schedule'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (name === 'schedule') loadSchedule();
+}
+
+async function loadSchedule() {
+  const from = document.getElementById('sch-from').value;
+  const to   = document.getElementById('sch-to').value;
+  let url = '/schedule';
+  const params = [];
+  if (from) params.push('from='+from);
+  if (to)   params.push('to='+to);
+  if (params.length) url += '?' + params.join('&');
+
+  const res  = await fetch(url);
+  const data = await res.json();
+  const grid = document.getElementById('schedule-grid');
+
+  if (!data.data.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:20px 0;">No bookings found for this range.</p>';
+    return;
+  }
+
+  // group by date
+  const grouped = {};
+  data.data.forEach(b => {
+    if (!grouped[b.date]) grouped[b.date] = [];
+    grouped[b.date].push(b);
+  });
+
+  const statusStyle = s => s === 'confirmed'
+    ? 'background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9'
+    : 'background:var(--pink-pale);color:var(--pink-deep);border-color:var(--border)';
+
+  grid.innerHTML = Object.keys(grouped).map(date => {
+    const d = new Date(date);
+    const dayName = d.toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const slots = grouped[date].map(b => `
+      <div class="sch-slot">
+        <div class="sch-time">${b.slot}</div>
+        <div class="sch-info">
+          <div class="sch-name">${b.fname} ${b.lname||''}</div>
+          <div class="sch-meta">${b.service} &nbsp;·&nbsp; ${b.phone} ${b.email ? '&nbsp;·&nbsp; '+b.email : ''}</div>
+          ${b.notes ? `<div class="sch-meta" style="margin-top:4px;font-style:italic;">${b.notes}</div>` : ''}
+        </div>
+        <div style="padding:14px 16px;display:flex;align-items:center;">
+          <span class="badge" style="${statusStyle(b.status)}">${b.status||'pending'}</span>
+        </div>
+      </div>`).join('');
+    return `
+      <div class="sch-day">
+        <div class="sch-day-header">
+          <span>${dayName}</span>
+          <span class="day-label">${grouped[date].length} appointment${grouped[date].length>1?'s':''}</span>
+        </div>
+        ${slots}
+      </div>`;
+  }).join('');
+}
+
+function clearScheduleFilter() {
+  document.getElementById('sch-from').value = '';
+  document.getElementById('sch-to').value = '';
+  loadSchedule();
+}
+
+async function approveReview(id) {
+  await fetch('/reviews/approve', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id}) });
+  loadReviews();
+}
+
+async function deleteReview(id) {
+  await fetch('/reviews/'+id, { method:'DELETE' });
+  loadReviews();
+}
+
+loadBookings();
+loadMessages();
+loadUsers();
+loadReviews();
+</script>
+</body>
+</html>

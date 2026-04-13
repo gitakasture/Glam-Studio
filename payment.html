@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payment — Varsha Pawar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#fdf8f8;--white:#ffffff;--pink:#e8a0b4;--pink-deep:#c96b8a;--pink-pale:#fce8ef;--text:#1a0d12;--muted:#8a6070;--border:#f0d0da;--accent:#d4547a;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);cursor:none;min-height:100vh;display:flex;flex-direction:column;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--pink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+.cursor-ring.expand{width:48px;height:48px;opacity:.5;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:24px 60px;background:rgba(253,248,248,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;letter-spacing:3px;text-transform:uppercase;}
+.logo span{color:var(--accent);font-style:italic;}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px;}
+.card{background:var(--white);border:1px solid var(--border);padding:48px;width:100%;max-width:480px;}
+.section-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--pink-deep);margin-bottom:12px;display:block;}
+.card h2{font-family:'Playfair Display',serif;font-size:32px;font-weight:300;margin-bottom:28px;}
+.card h2 em{font-style:italic;color:var(--accent);}
+
+/* order summary */
+.summary{background:var(--pink-pale);border:1px solid var(--border);padding:20px 24px;margin-bottom:28px;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;}
+.summary-row:last-child{margin-bottom:0;padding-top:10px;border-top:1px solid var(--border);font-weight:500;}
+.summary-row span:first-child{color:var(--muted);}
+.summary-row span:last-child{color:var(--text);}
+.amount{font-family:'Playfair Display',serif;font-size:22px;color:var(--accent);}
+
+/* tabs */
+.pay-tabs{display:flex;gap:0;margin-bottom:24px;}
+.ptab{flex:1;padding:11px;text-align:center;border:1px solid var(--border);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:none;transition:.2s;margin-right:-1px;background:transparent;}
+.ptab.active{background:var(--accent);color:#fff;border-color:var(--accent);z-index:1;}
+
+/* UPI section */
+.upi-section{display:block;}
+.qr-box{border:1px solid var(--border);padding:24px;text-align:center;margin-bottom:20px;background:var(--bg);}
+.qr-img{width:160px;height:160px;margin:0 auto 12px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.qr-img svg{width:140px;height:140px;}
+.qr-upi{font-size:13px;color:var(--muted);margin-bottom:4px;}
+.qr-upi strong{color:var(--accent);}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.fg{margin-bottom:20px;}
+.fg label{display:block;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.fg input{width:100%;padding:13px 16px;border:1px solid var(--border);background:var(--bg);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;color:var(--text);outline:none;transition:border-color .2s;}
+.fg input:focus{border-color:var(--pink-deep);}
+.btn{width:100%;padding:15px;background:var(--accent);color:#fff;border:none;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:none;transition:.2s;}
+.btn:hover{background:var(--pink-deep);}
+.btn:disabled{background:var(--muted);cursor:not-allowed;}
+.note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6;}
+
+/* success */
+.success-screen{display:none;text-align:center;padding:20px 0;}
+.tick-circle{width:72px;height:72px;border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 24px;color:var(--accent);}
+.success-screen h3{font-family:'Playfair Display',serif;font-size:28px;font-weight:300;margin-bottom:12px;}
+.success-screen p{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:8px;}
+.txn-id{font-size:11px;letter-spacing:2px;color:var(--pink-deep);margin-top:8px;}
+.btn-outline{display:inline-block;margin-top:24px;padding:12px 28px;border:1px solid var(--accent);color:var(--accent);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:none;transition:.2s;}
+.btn-outline:hover{background:var(--accent);color:#fff;}
+
+/* loading */
+.loading{display:none;text-align:center;padding:20px 0;}
+.spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+footer{background:var(--text);color:rgba(255,255,255,.5);padding:32px 60px;display:flex;justify-content:space-between;align-items:center;}
+footer .logo{color:rgba(255,255,255,.8);}
+footer p{font-size:12px;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+<nav><div class="logo">Varsha <span>Pawar</span></div></nav>
+
+<div class="wrap">
+  <div class="card">
+    <span class="section-label">Secure Payment</span>
+    <h2>Complete <em>Booking</em></h2>
+
+    <!-- Order Summary -->
+    <div class="summary">
+      <div class="summary-row"><span>Service</span><span id="pay-service">—</span></div>
+      <div class="summary-row"><span>Date</span><span id="pay-date">—</span></div>
+      <div class="summary-row"><span>Slot</span><span id="pay-slot">—</span></div>
+      <div class="summary-row"><span>Total Amount</span><span class="amount" id="pay-amount">—</span></div>
+    </div>
+
+    <!-- Payment form -->
+    <div id="pay-form">
+      <div class="pay-tabs">
+        <div class="ptab active" onclick="setPayTab('upi',this)">UPI</div>
+        <div class="ptab" onclick="setPayTab('qr',this)">QR Code</div>
+      </div>
+
+      <!-- UPI ID input -->
+      <div id="upi-input-section">
+        <div class="fg">
+          <label>Enter UPI ID</label>
+          <input type="text" id="upi-id" placeholder="yourname@upi"/>
+        </div>
+        <button class="btn" onclick="processPayment()">Pay Now</button>
+        <p class="note">You will receive a payment request on your UPI app.</p>
+      </div>
+
+      <!-- QR Code -->
+      <div id="qr-section" style="display:none;">
+        <div class="qr-box">
+          <div class="qr-img">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="30" height="30" fill="none" stroke="#1a0d12" stroke-width="3"/>
+              <rect x="15" y="15" width="20" height="20" fill="#1a0d12"/>
+              <rect x="60" y="10" width="30" height="30" fill="none" stroke="#1a0d12" stroke-width="3"/>
+              <rect x="65" y="15" width="20" height="20" fill="#1a0d12"/>
+              <rect x="10" y="60" width="30" height="30" fill="none" stroke="#1a0d12" stroke-width="3"/>
+              <rect x="15" y="65" width="20" height="20" fill="#1a0d12"/>
+              <rect x="60" y="50" width="8" height="8" fill="#1a0d12"/>
+              <rect x="72" y="50" width="8" height="8" fill="#1a0d12"/>
+              <rect x="84" y="50" width="8" height="8" fill="#1a0d12"/>
+              <rect x="60" y="62" width="8" height="8" fill="#1a0d12"/>
+              <rect x="84" y="62" width="8" height="8" fill="#1a0d12"/>
+              <rect x="60" y="74" width="8" height="8" fill="#1a0d12"/>
+              <rect x="72" y="74" width="8" height="8" fill="#1a0d12"/>
+              <rect x="84" y="74" width="8" height="8" fill="#1a0d12"/>
+              <rect x="45" y="10" width="8" height="8" fill="#1a0d12"/>
+              <rect x="45" y="22" width="8" height="8" fill="#1a0d12"/>
+              <rect x="45" y="45" width="8" height="8" fill="#1a0d12"/>
+              <rect x="10" y="45" width="8" height="8" fill="#1a0d12"/>
+              <rect x="22" y="45" width="8" height="8" fill="#1a0d12"/>
+            </svg>
+          </div>
+          <p class="qr-upi">UPI ID: <strong>varsha@upi</strong></p>
+          <p style="font-size:11px;color:var(--muted);margin-top:4px;">Scan with any UPI app to pay</p>
+        </div>
+        <button class="btn" onclick="processPayment()">I have paid</button>
+        <p class="note">After scanning and paying, click the button above to confirm.</p>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p style="font-size:13px;color:var(--muted);letter-spacing:1px;">Processing payment...</p>
+    </div>
+
+    <!-- Success -->
+    <div class="success-screen" id="success-screen">
+      <div class="tick-circle">✓</div>
+      <h3>Payment Successful!</h3>
+      <p>Your booking has been confirmed.<br/>Varsha will contact you within 24 hours.</p>
+      <p class="txn-id" id="txn-id"></p>
+      <a href="index.html" class="btn-outline">Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">Varsha <span>Pawar</span></div>
+  <p>© 2026 Varsha Pawar. All rights reserved.</p>
+</footer>
+
+<script>
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px';
+});
+document.querySelectorAll('button,a,input,.ptab').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+});
+
+// Load booking details from localStorage
+const booking = JSON.parse(localStorage.getItem('pendingBooking') || '{}');
+document.getElementById('pay-service').textContent = booking.service || '—';
+document.getElementById('pay-date').textContent = booking.date || '—';
+document.getElementById('pay-slot').textContent = booking.slot || '—';
+
+// Price map
+const prices = {
+  'Bridal Makeup · ₹12,000': '₹12,000',
+  'Bridal Trial · ₹3,000': '₹3,000',
+  'Engagement Makeup · ₹6,000': '₹6,000',
+  'Party Makeup · ₹2,500': '₹2,500',
+  'Sangeet / Mehndi · ₹3,500': '₹3,500',
+  'Photoshoot Makeup · ₹3,500': '₹3,500',
+  'Airbrush Makeup · ₹5,000': '₹5,000'
+};
+document.getElementById('pay-amount').textContent = prices[booking.service] || '₹0';
+
+function setPayTab(tab, btn) {
+  document.getElementById('upi-input-section').style.display = tab==='upi' ? 'block' : 'none';
+  document.getElementById('qr-section').style.display = tab==='qr' ? 'block' : 'none';
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function processPayment() {
+  document.getElementById('pay-form').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+
+  // Simulate payment processing delay
+  await new Promise(r => setTimeout(r, 2500));
+
+  // Save booking to DB
+  try {
+    await fetch('/book', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(booking)
+    });
+  } catch(e) {}
+
+  // Save payment record
+  const txnId = 'TXN' + Date.now();
+  try {
+    await fetch('/payment', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email: booking.email,
+        service: booking.service,
+        amount: prices[booking.service] || '0',
+        txn_id: txnId,
+        status: 'success'
+      })
+    });
+  } catch(e) {}
+
+  localStorage.removeItem('pendingBooking');
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('txn-id').textContent = 'Transaction ID: ' + txnId;
+}
+</script>
+</body>
+</html>

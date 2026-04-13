@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Dashboard — Varsha Pawar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#fdf8f8;--white:#ffffff;--pink:#e8a0b4;--pink-deep:#c96b8a;--pink-pale:#fce8ef;--text:#1a0d12;--muted:#8a6070;--border:#f0d0da;--accent:#d4547a;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);cursor:none;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--pink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:24px 60px;background:rgba(253,248,248,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;letter-spacing:3px;text-transform:uppercase;}
+.logo span{color:var(--accent);font-style:italic;}
+.nav-right{display:flex;gap:16px;align-items:center;}
+.nav-right a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;transition:color .2s;}
+.nav-right a:hover{color:var(--accent);}
+.wrap{padding:60px;}
+.section-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--pink-deep);margin-bottom:12px;display:block;}
+h2{font-family:'Playfair Display',serif;font-size:40px;font-weight:300;margin-bottom:8px;}
+h2 em{font-style:italic;color:var(--accent);}
+.welcome{font-size:14px;color:var(--muted);font-weight:300;margin-bottom:40px;}
+.tabs{display:flex;gap:0;margin-bottom:32px;}
+.tab{padding:11px 28px;border:1px solid var(--border);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:none;transition:.2s;margin-right:-1px;background:transparent;}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);z-index:1;}
+table{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--border);}
+th{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg);}
+td{font-size:13px;padding:14px 16px;border-bottom:1px solid var(--border);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--pink-pale);}
+.badge{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:var(--pink-pale);color:var(--pink-deep);border:1px solid var(--border);}
+.empty{text-align:center;padding:48px;color:var(--muted);font-size:13px;}
+.btn-primary{font-size:11px;font-weight:400;letter-spacing:2.5px;text-transform:uppercase;padding:12px 28px;background:var(--accent);color:#fff;border:none;cursor:none;transition:.25s;text-decoration:none;display:inline-block;margin-top:16px;}
+.btn-primary:hover{background:var(--pink-deep);}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+<nav>
+  <div class="logo">Varsha <span>Pawar</span></div>
+  <div class="nav-right">
+    <a href="index.html">View Site</a>
+    <a href="login.html" onclick="logout()">Logout</a>
+  </div>
+</nav>
+<div class="wrap">
+  <span class="section-label">My Account</span>
+  <h2>My <em>Dashboard</em></h2>
+  <p class="welcome" id="welcome-msg">Welcome back!</p>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('bookings',this)">My Bookings</button>
+    <button class="tab" onclick="showTab('enquiries',this)">My Enquiries</button>
+    <button class="tab" onclick="showTab('review',this)">Leave a Review</button>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div id="tab-bookings">
+    <table>
+      <thead><tr><th>#</th><th>Service</th><th>Date</th><th>Slot</th><th>Notes</th></tr></thead>
+      <tbody id="bookings-body"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
+    </table>
+    <a href="index.html" class="btn-primary" onclick="setTimeout(()=>go&&go('booking'),300)">Book New Appointment</a>
+  </div>
+
+  <!-- REVIEW -->
+  <div id="tab-review" style="display:none;">
+    <div style="background:#fff;border:1px solid var(--border);padding:40px;max-width:520px;">
+      <div class="fg"><label>Your Name</label><input type="text" id="rv-name" placeholder="Priya Sharma"/></div>
+      <div class="fg"><label>Service Taken</label>
+        <select id="rv-service" style="width:100%;padding:13px 16px;border:1px solid var(--border);background:var(--bg);font-family:'Jost',sans-serif;font-size:13px;color:var(--text);outline:none;">
+          <option>Bridal Makeup</option>
+          <option>Engagement Makeup</option>
+          <option>Party Makeup</option>
+          <option>Sangeet / Mehndi</option>
+          <option>Photoshoot Makeup</option>
+          <option>Airbrush Makeup</option>
+        </select>
+      </div>
+      <div class="fg"><label>Rating</label>
+        <div id="star-rating" style="display:flex;gap:8px;font-size:28px;cursor:pointer;">
+          <span onclick="setRating(1)" style="color:var(--border);">★</span>
+          <span onclick="setRating(2)" style="color:var(--border);">★</span>
+          <span onclick="setRating(3)" style="color:var(--border);">★</span>
+          <span onclick="setRating(4)" style="color:var(--border);">★</span>
+          <span onclick="setRating(5)" style="color:var(--border);">★</span>
+        </div>
+      </div>
+      <div class="fg"><label>Your Review</label><textarea id="rv-text" placeholder="Share your experience..." style="width:100%;padding:13px 16px;border:1px solid var(--border);background:var(--bg);font-family:'Jost',sans-serif;font-size:13px;min-height:100px;resize:vertical;outline:none;"></textarea></div>
+      <button class="btn-primary" style="border:none;cursor:pointer;width:100%;padding:15px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:3px;" onclick="submitReview()">Submit Review</button>
+      <p id="rv-msg" style="display:none;margin-top:16px;font-size:13px;color:#2e7d32;text-align:center;">Review submitted! It will appear after admin approval.</p>
+    </div>
+  </div>
+
+  <!-- ENQUIRIES -->
+  <div id="tab-enquiries" style="display:none;">
+    <table>
+      <thead><tr><th>#</th><th>Subject</th><th>Message</th></tr></thead>
+      <tbody id="enquiries-body"><tr><td colspan="3" class="empty">Loading...</td></tr></tbody>
+    </table>
+    <a href="index.html" class="btn-primary">Send New Enquiry</a>
+  </div>
+</div>
+
+<script>
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px';
+});
+
+// get logged in user from localStorage
+const userEmail = localStorage.getItem('userEmail');
+const userName = localStorage.getItem('userName');
+
+if (!userEmail) {
+  window.location.href = 'login.html';
+}
+
+document.getElementById('welcome-msg').textContent = `Welcome back, ${userName || userEmail}!`;
+
+function showTab(name, btn) {
+  ['bookings','enquiries','review'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function loadBookings() {
+  const res = await fetch('/my-bookings?email=' + encodeURIComponent(userEmail));
+  const data = await res.json();
+  const tbody = document.getElementById('bookings-body');
+  if (!data.data.length) {
+    tbody.innerHTML='<tr><td colspan="5" class="empty">No bookings yet. Book your first appointment!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.data.map((b,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><span class="badge">${b.service}</span></td>
+      <td>${b.date}</td>
+      <td>${b.slot}</td>
+      <td>${b.notes||'-'}</td>
+    </tr>`).join('');
+}
+
+async function loadEnquiries() {
+  const res = await fetch('/my-messages?email=' + encodeURIComponent(userEmail));
+  const data = await res.json();
+  const tbody = document.getElementById('enquiries-body');
+  if (!data.data.length) {
+    tbody.innerHTML='<tr><td colspan="3" class="empty">No enquiries yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.data.map((m,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${m.subject||'-'}</td>
+      <td>${m.message}</td>
+    </tr>`).join('');
+}
+
+function logout() {
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userName');
+}
+
+let selectedRating = 5;
+function setRating(n) {
+  selectedRating = n;
+  document.querySelectorAll('#star-rating span').forEach((s,i) => {
+    s.style.color = i < n ? 'var(--accent)' : 'var(--border)';
+  });
+}
+setRating(5);
+
+async function submitReview() {
+  const name = document.getElementById('rv-name').value.trim();
+  const service = document.getElementById('rv-service').value;
+  const review = document.getElementById('rv-text').value.trim();
+  if (!name || !review) { alert('Please fill name and review.'); return; }
+  const res = await fetch('/review', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name, service, rating: selectedRating, review })
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('rv-msg').style.display = 'block';
+    document.getElementById('rv-name').value = '';
+    document.getElementById('rv-text').value = '';
+    setRating(5);
+  }
+}
+
+loadBookings();
+loadEnquiries();
+</script>
+</body>
+</html>
