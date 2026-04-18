@@ -209,9 +209,9 @@ footer .footer-links a:hover{color:var(--pink);}
     <a onclick="go('contact')">Contact</a>
   </div>
   <button class="nav-cta" onclick="go('booking')">Book Now</button>
-  <div id="nav-auth">
+  <div id="nav-auth" style="display:flex;align-items:center;gap:12px;">
     <a href="login.html" id="nav-login" style="font-size:11px;font-weight:400;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;border:1px solid var(--border);color:var(--muted);text-decoration:none;cursor:none;transition:.25s;" onmouseenter="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Login</a>
-    <div id="nav-profile" style="display:none;display:flex;align-items:center;gap:12px;">
+    <div id="nav-profile" style="display:none;align-items:center;gap:12px;">
       <a href="dashboard.html" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;cursor:none;transition:.25s;">My Account</a>
       <a href="login.html" onclick="logout()" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;">Logout</a>
     </div>
